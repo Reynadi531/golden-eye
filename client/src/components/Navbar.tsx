@@ -21,16 +21,16 @@ import navigationLinks from "@/constant/NavigationLink";
 export default function Component() {
   const id = useId();
   const [checked, setChecked] = useState<boolean>(true);
-    for (const link of navigationLinks) {
-      if (link.href === window.location.pathname) {
-        link.active = true;
-      } else {
-        link.active = false;
-      }
+  for (const link of navigationLinks) {
+    if (link.href === window.location.pathname) {
+      link.active = true;
+    } else {
+      link.active = false;
     }
+  }
+
   useEffect(() => {
     document.documentElement.classList.add("dark");
-
   }, []);
 
   const handleThemeChange = (checked: boolean) => {
@@ -43,7 +43,7 @@ export default function Component() {
   };
 
   return (
-    <header className="relative z-[1001] border-b px-4 md:px-6">
+    <header className="sticky top-0 z-[1001] border-b bg-background px-4 md:px-6">
       <div className="flex h-16 justify-between gap-4">
         <div className="flex gap-2">
           <div className="flex items-center md:hidden">
