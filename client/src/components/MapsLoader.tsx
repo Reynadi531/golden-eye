@@ -33,6 +33,7 @@ const MapsLoader: React.FC = () => {
         center={[-6.930587, 107.616096]}
         zoom={10}
         className="h-full w-full"
+        zoomControl={false}
       >
         <TileLayer
           key={isDark ? "dark" : "light"}
