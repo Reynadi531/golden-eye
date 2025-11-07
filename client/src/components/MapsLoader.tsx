@@ -1,6 +1,8 @@
 import { useList } from "@/hooks/useList";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import { Icon } from "leaflet";
 
 const MapsLoader: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
@@ -43,7 +45,7 @@ const MapsLoader: React.FC = () => {
           attribution='&copy; <a href="https://carto.com/">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         />
         {data?.data?.items.map((item, key) => (
-          <Marker key={key} position={[item.lat, item.lon]} >
+          <Marker key={key} position={[item.lat, item.lon]} icon={new Icon({ iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41] })}>
             <Popup>
               <p className="text-md font-bold">{item.location}</p>
               <p>{item.lat}, {item.lon}</p>
