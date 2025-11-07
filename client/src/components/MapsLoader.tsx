@@ -1,8 +1,10 @@
+import { useList } from "@/hooks/useList";
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 const MapsLoader: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
+  const {data} = useList();
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
@@ -30,8 +32,8 @@ const MapsLoader: React.FC = () => {
   return (
     <div className="h-[calc(100vh-4rem)] w-full bg-gray-200 dark:bg-gray-900">
       <MapContainer
-        center={[-6.930587, 107.616096]}
-        zoom={10}
+        center={data?.data?.center ? [data.data.center.lat, data.data.center.lon] : [-6.930587, 107.616096]}
+        zoom={13}
         className="h-full w-full"
         zoomControl={false}
       >
@@ -40,6 +42,14 @@ const MapsLoader: React.FC = () => {
           url={tileLayerUrl}
           attribution='&copy; <a href="https://carto.com/">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         />
+        {data?.data?.items.map((item, key) => (
+          <Marker key={key} position={[item.lat, item.lon]} >
+            <Popup>
+              <p className="text-md font-bold">{item.location}</p>
+              <p>{item.lat}, {item.lon}</p>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
     </div>
   );

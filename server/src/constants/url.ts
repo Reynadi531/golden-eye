@@ -1,0 +1,1 @@
+export const BASE_PROXY_URL: String | undefined = process.env.BASE_PROXY_URL;
