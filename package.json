@@ -12,6 +12,7 @@
     "./shared"
   ],
   "scripts": {
+    "start:server": "bun run ./server/dist/index.js",
     "dev": "turbo dev",
     "dev:client": "turbo dev --filter=client",
     "dev:server": "turbo dev --filter=server",
