@@ -1,13 +1,13 @@
-import type { PaginationResponse } from 'shared/src'
+import type { List2Response} from 'shared/src'
 import { create } from "zustand";
 
 
 type ListState = {
-  data: PaginationResponse | null; 
-  setData: (data: PaginationResponse | null) => void;
+  data: List2Response | null;
+  setData: (data: List2Response | null) => void;
 };
 
 export const useList = create<ListState>((set) => ({
   data: null,
-  setData: (data: PaginationResponse | null) => set(() => ({ data })),
+  setData: (data: List2Response | null) => set(() => ({ data })),
 }));

@@ -7,11 +7,16 @@ import {
   TableCell,
   TableHead,
 } from "@/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { BASE_URL } from "@/constant/Url";
 import { useList } from "@/hooks/useList";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hcWithType } from "server/dist/client";
 
 export const Route = createFileRoute("/list")({
@@ -22,13 +27,12 @@ const client = hcWithType(BASE_URL);
 
 function RouteComponent() {
   const { data, setData } = useList();
+  const [openPopover, setOpenPopover] = useState<number | null>(null);
 
   const mutation = useMutation({
     mutationFn: async () => {
       try {
-        const res = await client.api.list.$get({
-          query: { q: "100", pageSize: "32", page: "1" },
-        });
+        const res = await client.api.list2.$get();
         if (!res.ok) {
           console.log("Error fetching data");
           return;
@@ -75,12 +79,42 @@ function RouteComponent() {
             )}
             {data &&
               data.data?.items.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="text-center">{index + 1}</TableCell>
-                  <TableCell>{item.location}</TableCell>
-                  <TableCell>{item.lat}</TableCell>
-                  <TableCell>{item.lon}</TableCell>
-                </TableRow>
+                <Popover
+                  key={index}
+                  open={openPopover === index}
+                  onOpenChange={(open) => {
+                    setOpenPopover(open ? index : null);
+                  }}
+                >
+                  <PopoverTrigger asChild>
+                    <TableRow className="cursor-pointer hover:bg-muted/50">
+                      <TableCell className="text-center">{index + 1}</TableCell>
+                      <TableCell>{item.location}</TableCell>
+                      <TableCell>{item.lat}</TableCell>
+                      <TableCell>{item.lon}</TableCell>
+                    </TableRow>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-2">
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-lg">{item.location}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Koordinat: {item.lat}, {item.lon}
+                      </p>
+                      {item.imagePath && item.imagePath.length > 0 && (
+                        <div className="space-y-2">
+                          {item.imagePath.map((img, imgIndex) => (
+                            <img
+                              key={imgIndex}
+                              src={img}
+                              alt={`${item.location} - ${imgIndex + 1}`}
+                              className="w-full rounded-md"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               ))}
           </TableBody>
         </Table>

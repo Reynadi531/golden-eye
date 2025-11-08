@@ -21,9 +21,7 @@ function Index() {
   const mutation = useMutation({
     mutationFn: async () => {
       try {
-        const res = await client.api.list.$get({
-          query: { q: "100", pageSize: "32", page: "1" },
-        });
+        const res = await client.api.list2.$get();
         if (!res.ok) {
           console.log("Error fetching data");
           return;

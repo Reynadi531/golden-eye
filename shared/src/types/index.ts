@@ -31,3 +31,5 @@ export type ExtendedProxyResultItem = ProxyResultItem & {
   location: string;  
   imagePath: string;
 }
+
+export * from "./list2";

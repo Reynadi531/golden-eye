@@ -3,10 +3,12 @@ import { cors } from "hono/cors";
 import ky from "ky";
 import type {
   ExtendedProxyResultItem,
+  List2Response,
   PaginationResponse,
   ProxyResponse,
+  TileGistItem,
 } from "shared/dist";
-import { BASE_PROXY_URL } from "./constants/url";
+import { BASE_PROXY_URL, LOCATIONS_URL, S3_BUCKET_URL } from "./constants/url";
 import { logger } from "hono/logger";
 import { zValidator as zv } from '@hono/zod-validator'
 import * as z from "zod";
@@ -79,6 +81,35 @@ const app = new Hono()
   };
 
   return c.json(data, { status: 200 });
+})
+.get("/api/list2", async(c) => {
+  const response = await ky.get(LOCATIONS_URL as string);
+  if (!response.ok) {
+    return c.json(
+      {
+        success: false,
+        message: "Failed to fetch data",
+      } as List2Response,
+      { status: 500 }
+    );
+  }
+
+  const data: TileGistItem[] = await response.json();
+  
+  const extendedData: List2Response = {
+    success: true,
+    data: {
+      center: findCenterCoordinate(data.map(item => ({ lat: item.lat, lon: item.lon }))),
+      items: await Promise.all(data.map(async(item) => ({
+        lat: item.lat,
+        lon: item.lon,
+        location: (await reverseGeocoding(item.lat, item.lon)).display_name,
+        imagePath: item.s3_keys.map((url) => `${S3_BUCKET_URL}/${url}`),
+      }))),
+    },
+  }
+
+  return c.json(extendedData, { status: 200 });
 })
 
 

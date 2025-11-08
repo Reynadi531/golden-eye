@@ -64,7 +64,15 @@ const MapsLoader: React.FC = () => {
             <Popup>
               <p className="text-md font-bold">{item.location}</p>
               <p>{item.lat}, {item.lon}</p>
-              <img src={item.imagePath} alt="Location" className="mt-2 rounded-md" />
+              {item.imagePath.length < 2 ? (
+                <img src={item.imagePath[0]} alt="Location" className="mt-2 rounded-md" />
+              ) : (
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {item.imagePath.map((imgUrl, idx) => (
+                    <img key={idx} src={imgUrl} alt={`Location ${idx + 1}`} className="rounded-md" />
+                  ))}
+                </div>
+              )}
             </Popup>
           </Marker>
         ))}
