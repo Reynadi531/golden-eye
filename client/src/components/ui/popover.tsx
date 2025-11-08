@@ -32,7 +32,7 @@ function PopoverPopup({
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
         data-slot="popover-positioner"
-        className="z-50"
+        className="z-[1002]"
         side={side}
         sideOffset={sideOffset}
         align={align}
