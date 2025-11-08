@@ -1,10 +1,14 @@
 import { Popover as PopoverPrimitive } from "@base-ui-components/react/popover"
+import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
 const Popover = PopoverPrimitive.Root
 
-function PopoverTrigger(props: PopoverPrimitive.Trigger.Props) {
+function PopoverTrigger({ asChild, ...props }: PopoverPrimitive.Trigger.Props & { asChild?: boolean }) {
+  if (asChild) {
+    return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} render={<Slot.Root />} />
+  }
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 

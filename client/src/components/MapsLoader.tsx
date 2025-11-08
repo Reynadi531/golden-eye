@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import { Icon } from "leaflet";
-import { Button } from "./ui/button";
 
 const MapsLoader: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
@@ -65,13 +64,13 @@ const MapsLoader: React.FC = () => {
             <Popup>
               <p className="text-md font-bold">{item.location}</p>
               <p>{item.lat}, {item.lon}</p>
+              <img src={item.imagePath} alt="Location" className="mt-2 rounded-md" />
             </Popup>
           </Marker>
         ))}
       </MapContainer>
       
-      {/* Floating button to toggle basemap */}
-      <Button
+      <button
         onClick={() => setIsSatellite(!isSatellite)}
         className="absolute top-4 left-4 z-[1000] bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-4 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-300 dark:border-gray-700 font-medium"
         title={isSatellite ? "Switch to Map View" : "Switch to Satellite View"}
@@ -91,7 +90,7 @@ const MapsLoader: React.FC = () => {
             Satellite
           </span>
         )}
-      </Button>
+      </button>
     </div>
   );
 };

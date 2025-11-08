@@ -13,6 +13,7 @@ import * as z from "zod";
 import { HTTPException } from "hono/http-exception";
 import findCenterCoordinate from "./utils/findCenterCoordinate";
 import reverseGeocoding from "./utils/reverseGeocoding";
+import fuzzyPathImage from "./utils/fuzzyPathImage";
 
 export const zValidator = <T extends z.ZodSchema, Target extends keyof ValidationTargets>(
   target: Target,
@@ -58,10 +59,13 @@ const app = new Hono()
 
   const proxyData: ProxyResponse = await response.json();
 
+  const centerCoordinate = findCenterCoordinate(proxyData.result);
+
   const modifiedResults: ExtendedProxyResultItem[] = await Promise.all(proxyData.result.map(async(item) => ({
     ...item,
     location: (await reverseGeocoding(item.lat, item.lon)).display_name,
-  })));
+    imagePath: (await fuzzyPathImage(item.lat, item.lon, centerCoordinate)),
+  } as ExtendedProxyResultItem)));
 
   const data: PaginationResponse = {
     success: true,
@@ -69,7 +73,7 @@ const app = new Hono()
     page: page,
     pageSize: pagesize,
     data: {
-      center: findCenterCoordinate(proxyData.result),
+      center: centerCoordinate,
       items: modifiedResults,
     },
   };

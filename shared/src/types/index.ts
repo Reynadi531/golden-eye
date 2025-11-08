@@ -29,4 +29,5 @@ export type ProxyResponse = {
 
 export type ExtendedProxyResultItem = ProxyResultItem & {
   location: string;  
+  imagePath: string;
 }

@@ -48,7 +48,7 @@ export default function Component() {
         <div className="flex gap-2">
           <div className="flex items-center md:hidden">
             <Popover>
-              <PopoverTrigger>
+              <PopoverTrigger asChild>
                 <Button className="group size-8" variant="ghost" size="icon">
                   <svg
                     className="pointer-events-none"
