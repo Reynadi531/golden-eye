@@ -103,7 +103,7 @@ const app = new Hono()
       items: await Promise.all(data.map(async(item) => ({
         lat: item.lat,
         lon: item.lon,
-        location: (await reverseGeocoding(item.lat, item.lon)).display_name,
+        location: item.location || "", 
         imagePath: item.s3_keys.map((url) => `${S3_BUCKET_URL}/${url}`),
       }))),
     },
@@ -113,10 +113,4 @@ const app = new Hono()
 })
 
 
-const port = process.env.PORT ? Number(process.env.PORT) : 5000;
-
-export type AppType = typeof app;
-export default {
-  port,
-  fetch: app.fetch,
-}
+export default app;

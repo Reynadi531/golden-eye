@@ -1,6 +1,7 @@
 export type TileGistItem = {
   lat: number;   
   lon: number; 
+  location?: string;
   s3_keys: string[];
 };
 
