@@ -1,5 +1,5 @@
 import { hc } from "hono/client";
-import app from "./index";
+import type app from "./index";
 
 export type Client = ReturnType<typeof hc<typeof app>>;
 

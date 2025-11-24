@@ -1,4 +1,4 @@
-import { BASE_PROXY_URL, S3_BUCKET_URL } from "@server/constants/url";
+import { BASE_PROXY_URL, S3_BUCKET_URL } from "../constants/url";
 import ky from "ky";
 
 export type TileItem = {
