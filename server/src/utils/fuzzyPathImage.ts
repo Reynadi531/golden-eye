@@ -16,6 +16,10 @@ export type TilesResponse = {
 type FuzzyPathImage = (latitude: number, longitude: number, center: {lat: number, lon: number}) => Promise<string>;
 
 const fuzzyPathImage: FuzzyPathImage = async(latitude, longitude, center) => {
+    if (!BASE_PROXY_URL || !S3_BUCKET_URL) {
+        throw new Error('BASE_PROXY_URL or S3_BUCKET_URL not configured');
+    }
+
     const response = await ky.get(`${BASE_PROXY_URL}/fetch`, {
         searchParams: {
             lat: center.lat,

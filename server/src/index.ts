@@ -37,6 +37,10 @@ const app = new Hono()
       page: z.string().optional(),
     })
   ), async (c) => {
+  if (!BASE_PROXY_URL) {
+    return c.json({ message: "BASE_PROXY_URL not configured", success: false }, { status: 500 });
+  }
+
   let query: number = Number(c.req.query("q")) || 100;
   let pagesize: number = Number(c.req.query("pageSize")) || 32;
   let page: number = Number(c.req.query("page")) || 1;
@@ -83,7 +87,14 @@ const app = new Hono()
   return c.json(data, { status: 200 });
 })
 .get("/api/list2", async(c) => {
-  const response = await ky.get(LOCATIONS_URL as string);
+  if (!LOCATIONS_URL) {
+    return c.json({ message: "LOCATIONS_URL not configured", success: false }, { status: 500 });
+  }
+  if (!S3_BUCKET_URL) {
+    return c.json({ message: "S3_BUCKET_URL not configured", success: false }, { status: 500 });
+  }
+
+  const response = await ky.get(LOCATIONS_URL);
   if (!response.ok) {
     return c.json(
       {
