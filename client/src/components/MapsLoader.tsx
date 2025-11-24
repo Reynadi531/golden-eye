@@ -1,8 +1,53 @@
 import { useList } from "@/hooks/useList";
 import React, { useEffect, useState } from "react";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import { Icon } from "leaflet";
+import { Icon, LatLngBounds } from "leaflet";
+
+const FitBoundsToGeoJSON: React.FC<{ data: unknown }> = ({ data }) => {
+  const map = useMap();
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (!data || hasAnimated) return;
+
+    const bounds = new LatLngBounds([]);
+
+    const addCoordinates = (coords: number[] | number[][]) => {
+      if (Array.isArray(coords[0])) {
+        (coords as number[][]).forEach((coord) => addCoordinates(coord));
+      } else {
+        const [lng, lat] = coords as number[];
+        bounds.extend([lat, lng]);
+      }
+    };
+
+    if (data && typeof data === 'object' && 'features' in data) {
+      const geoData = data as { features?: Array<{ geometry?: { coordinates?: unknown } }> };
+      geoData.features?.forEach((feature) => {
+        if (feature.geometry?.coordinates) {
+          addCoordinates(feature.geometry.coordinates as number[] | number[][]);
+        }
+      });
+    }
+
+    if (bounds.isValid()) {
+      // First show all of Indonesia
+      map.setView([-2.5, 118], 5, { animate: false });
+      
+      // Then zoom to GeoJSON bounds after a short delay
+      setTimeout(() => {
+        map.flyToBounds(bounds, { 
+          padding: [50, 50],
+          duration: 2.5
+        });
+        setHasAnimated(true);
+      }, 500);
+    }
+  }, [data, map, hasAnimated]);
+
+  return null;
+};
 
 const MapsLoader: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
@@ -30,7 +75,8 @@ const MapsLoader: React.FC = () => {
 
   const getTileLayerUrl = () => {
     if (isSatellite) {
-      return "http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}";
+      // return "http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}";
+      return "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
     }
     return isDark
       ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -46,10 +92,19 @@ const MapsLoader: React.FC = () => {
     return '&copy; <a href="https://carto.com/">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors';
   };
 
+  const [geoJsonData, setGeoJsonData] = useState(null);
+
+  useEffect(() => {
+    fetch('/tnks.geojson')
+      .then(response => response.json())
+      .then(data => setGeoJsonData(data))
+      .catch(error => console.error('Error loading GeoJSON data:', error));
+  }, []);
+
   return (
     <div className="relative h-[calc(100vh-4rem)] w-full bg-gray-200 dark:bg-gray-900">
       <MapContainer
-        center={data?.data?.center ? [data.data.center.lat, data.data.center.lon] : [-6.930587, 107.616096]}
+        center={[-6.930587, 107.616096]}
         zoom={14}
         className="h-full w-full"
         zoomControl={false}
@@ -59,6 +114,12 @@ const MapsLoader: React.FC = () => {
           url={tileLayerUrl}
           attribution={getAttribution()}
         />
+        {geoJsonData && (
+          <>
+            <GeoJSON data={geoJsonData} style={{ color: isDark ? '#ffffff' : '#000000', weight: 2, fillOpacity: 0.1 }} />
+            <FitBoundsToGeoJSON data={geoJsonData} />
+          </>
+        )}
         {data?.data?.items.map((item, key) => (
           <Marker key={key} position={[item.lat, item.lon]} icon={new Icon({ iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41] })}>
             <Popup>
