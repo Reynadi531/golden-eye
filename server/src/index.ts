@@ -27,7 +27,7 @@ export const zValidator = <T extends z.ZodSchema, Target extends keyof Validatio
     }
   })
 
-const app = new Hono()
+const app = new Hono<{ Bindings: {} }>()
   .use(cors())
   .use(logger())
   .get("/api/list", zValidator('query', 

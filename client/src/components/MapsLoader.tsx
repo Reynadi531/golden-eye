@@ -104,8 +104,8 @@ const MapsLoader: React.FC = () => {
   return (
     <div className="relative h-[calc(100vh-4rem)] w-full bg-gray-200 dark:bg-gray-900">
       <MapContainer
-        center={[-6.930587, 107.616096]}
-        zoom={14}
+        center={[-2.336230033294256, 101.67855424008344]}
+        zoom={8}
         className="h-full w-full"
         zoomControl={false}
       >
@@ -114,7 +114,7 @@ const MapsLoader: React.FC = () => {
           url={tileLayerUrl}
           attribution={getAttribution()}
         />
-        {geoJsonData && (
+        {(geoJsonData && import.meta.env.VITE_BOUNDERIES_ENABLED === "true")  && (
           <>
             <GeoJSON data={geoJsonData} style={{ color: isDark ? '#ffffff' : '#000000', weight: 2, fillOpacity: 0.1 }} />
             <FitBoundsToGeoJSON data={geoJsonData} />
